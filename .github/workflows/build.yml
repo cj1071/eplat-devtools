@@ -29,29 +29,6 @@ jobs:
       - name: 构建 & 打包 ZIP
         run: pnpm zip
 
-      # CRX 构建（使用签名密钥）
-      - name: 安装 Chrome
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: browser-actions/setup-chrome@v1
-        with:
-          chrome-version: stable
-
-      - name: 构建 CRX
-        if: startsWith(github.ref, 'refs/tags/')
-        run: |
-          # 如果有 pem 密钥则使用，否则首次生成
-          if [ -n "$CRX_PRIVATE_KEY" ]; then
-            echo "$CRX_PRIVATE_KEY" > /tmp/extension.pem
-            chrome --pack-extension=.output/chrome-mv3 --pack-extension-key=/tmp/extension.pem --no-sandbox
-            rm /tmp/extension.pem
-          else
-            chrome --pack-extension=.output/chrome-mv3 --no-sandbox
-          fi
-          mv .output/chrome-mv3.crx .output/eplat-devtools.crx 2>/dev/null || true
-          zip -j .output/eplat-devtools.crx.zip .output/eplat-devtools.crx
-        env:
-          CRX_PRIVATE_KEY: ${{ secrets.CRX_PRIVATE_KEY }}
-
       # 发布 Release
       - name: 发布 Release
         if: startsWith(github.ref, 'refs/tags/')
@@ -59,5 +36,4 @@ jobs:
         with:
           files: |
             .output/*.zip
-            .output/*.crx
           generate_release_notes: true

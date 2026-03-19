@@ -1,6 +1,10 @@
 // 类型安全的消息通信协议
 
 import { MSG } from './constants';
+import {
+  getExtensionReloadMessage,
+  isExtensionContextInvalidatedError,
+} from './extension-context';
 
 // ===== 消息类型定义 =====
 
@@ -49,8 +53,21 @@ export type ExtensionMessage =
 // ===== 辅助函数 =====
 
 /** 向 background 发送消息 */
-export function sendToBackground(message: ExtensionMessage): Promise<unknown> {
-  return chrome.runtime.sendMessage(message);
+export async function sendToBackground(
+  message: ExtensionMessage,
+): Promise<unknown> {
+  try {
+    return await chrome.runtime.sendMessage(message);
+  } catch (error) {
+    if (isExtensionContextInvalidatedError(error)) {
+      return {
+        ok: false,
+        error: getExtensionReloadMessage(),
+      };
+    }
+
+    throw error;
+  }
 }
 
 /** 向指定 tab 的 content script 发送消息 */

@@ -37,21 +37,6 @@ pnpm zip
 
 这是当前最稳定的安装方式。
 
-### CRX 的实际边界
-
-Release 会同时提供：
-
-- `eplat-devtools.crx`
-- `eplat-devtools.crx.zip`
-
-其中 `eplat-devtools.crx.zip` 只是给浏览器下载使用的包装文件。下载后先解压，再得到 `eplat-devtools.crx`。
-
-需要注意：
-
-- Chrome 经常会拦截 `.crx` 直接下载，所以优先下载 `eplat-devtools.crx.zip`
-- 在 Windows 和 macOS 上，Chrome 官方不支持从本地 CRX 路径做普通外部安装；这类安装通常需要 Chrome Web Store 或企业策略
-- Linux 才支持通过本地 CRX 或外部托管方式做系统级安装
-
 参考：
 
 - Chrome 加载已解压扩展：<https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world#load-unpacked>
@@ -62,7 +47,5 @@ Release 会同时提供：
 GitHub Actions 在打 tag 时会生成：
 
 - `eplat-devtools-<version>-chrome.zip`
-- `eplat-devtools.crx`
-- `eplat-devtools.crx.zip`
 
-如果只是测试或内部使用，优先使用 ZIP 解压加载。
+如果只是测试或内部使用，优先使用 ZIP 解压加载。当前 CI 不再构建 `.crx` 或 `.crx.zip`。

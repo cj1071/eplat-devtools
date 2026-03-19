@@ -21,7 +21,7 @@ export async function readZoom(): Promise<number> {
 /** 保存缩放级别 */
 export function writeZoom(zoom: number): void {
   try {
-    chrome.storage.local.set({ [STORAGE_KEYS.zoom]: zoom });
+    void chrome.storage.local.set({ [STORAGE_KEYS.zoom]: zoom }).catch(() => {});
   } catch {
     // 静默失败
   }
@@ -40,7 +40,7 @@ export async function readFabEnabled(): Promise<boolean> {
 /** 保存悬浮球开关 */
 export function writeFabEnabled(enabled: boolean): void {
   try {
-    chrome.storage.local.set({ [STORAGE_KEYS.fabEnabled]: enabled });
+    void chrome.storage.local.set({ [STORAGE_KEYS.fabEnabled]: enabled }).catch(() => {});
   } catch {
     // 静默失败
   }
@@ -75,17 +75,25 @@ export async function readClipboard(): Promise<ClipboardEntry[]> {
 export async function appendClipboard(
   entry: ClipboardEntry,
 ): Promise<void> {
-  const items = (await readClipboard()).filter(
-    (item) => item.content !== entry.content,
-  );
-  items.unshift(entry);
-  if (items.length > 50) items.length = 50;
-  await chrome.storage.local.set({ [STORAGE_KEYS.clipboard]: items });
+  try {
+    const items = (await readClipboard()).filter(
+      (item) => item.content !== entry.content,
+    );
+    items.unshift(entry);
+    if (items.length > 50) items.length = 50;
+    await chrome.storage.local.set({ [STORAGE_KEYS.clipboard]: items });
+  } catch {
+    // 扩展重载后旧 content script 可能仍驻留在页面中，此时静默跳过写入
+  }
 }
 
 /** 清空剪贴板 */
 export async function clearClipboard(): Promise<void> {
-  await chrome.storage.local.set({ [STORAGE_KEYS.clipboard]: [] });
+  try {
+    await chrome.storage.local.set({ [STORAGE_KEYS.clipboard]: [] });
+  } catch {
+    // 静默失败
+  }
 }
 
 /** 读取自定义代码片段 */
@@ -104,5 +112,9 @@ export async function readCustomSnippets(): Promise<SnippetCategory[]> {
 export async function writeCustomSnippets(
   categories: SnippetCategory[],
 ): Promise<void> {
-  await chrome.storage.local.set({ [STORAGE_KEYS.customSnippets]: categories });
+  try {
+    await chrome.storage.local.set({ [STORAGE_KEYS.customSnippets]: categories });
+  } catch {
+    // 静默失败
+  }
 }

@@ -1,10 +1,29 @@
 // 悬浮球模块 — 页面内快捷打开 sidepanel
 
 import { CSS_CLASSES, MSG } from '@/lib/constants';
+import { getExtensionReloadMessage } from '@/lib/extension-context';
 import { readFabEnabled } from '@/lib/storage';
 import { sendToBackground } from '@/lib/messaging';
 
 let fabElement: HTMLElement | null = null;
+
+function isMessageFailure(
+  value: unknown,
+): value is { ok: false; error?: string } {
+  return !!value && typeof value === 'object' && 'ok' in value && value.ok === false;
+}
+
+async function handleFabClick() {
+  const result = await sendToBackground({ type: MSG.openSidepanel });
+
+  if (isMessageFailure(result)) {
+    if (result.error === getExtensionReloadMessage()) {
+      removeFab();
+    }
+
+    console.warn(result.error ?? '打开 sidepanel 失败');
+  }
+}
 
 /** 创建悬浮球 DOM */
 function createFab(): HTMLElement {
@@ -19,7 +38,7 @@ function createFab(): HTMLElement {
   fab.style.top = 'auto';
 
   fab.addEventListener('click', () => {
-    sendToBackground({ type: MSG.openSidepanel });
+    void handleFabClick();
   });
 
   return fab;
