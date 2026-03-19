@@ -51,8 +51,11 @@ function notifyAceEditors(style: { fontSize: number }) {
 
 /** 请求 Ace 重新布局 */
 export function requestAceResize() {
-  const dispatch = () =>
+  const dispatch = () => {
     window.dispatchEvent(new CustomEvent(EVENTS.aceResize));
+    // 同步触发原生 window resize，适配自定义组件内部无独立 CustomEvent 监听的 Ace 实例
+    window.dispatchEvent(new Event('resize'));
+  };
   dispatch();
   requestAnimationFrame(() => {
     dispatch();

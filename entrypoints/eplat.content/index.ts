@@ -1,10 +1,11 @@
 // Content Script 主入口
 
-import { TARGET_PATHS, SELECTORS, CSS_CLASSES, MSG } from '@/lib/constants';
+import { TARGET_PATHS, SELECTORS, CSS_CLASSES, MSG, STORAGE_KEYS } from '@/lib/constants';
 import { initZoom, applyZoom, requestAceResize } from './zoom';
 import { refreshUi, updateToolbarLabel } from './toolbar';
 import { registerKeyboard } from './keyboard';
 import { mountFab } from './fab';
+import { registerUrlCopyListener } from './url-copy';
 import type { ExtensionMessage } from '@/lib/messaging';
 import './style.css';
 
@@ -32,7 +33,13 @@ export default defineContentScript({
     refreshUi();
 
     // 挂载悬浮球
-    mountFab();
+    await mountFab();
+
+    chrome.storage.onChanged.addListener((changes, areaName) => {
+      if (areaName === 'local' && changes[STORAGE_KEYS.fabEnabled]) {
+        void mountFab();
+      }
+    });
 
     // DOM 变化监听
     let refreshQueued = false;
@@ -54,15 +61,17 @@ export default defineContentScript({
     // 注册快捷键
     registerKeyboard();
 
+    // 监听复制完整 eplat URL，并自动改写为相对路径
+    registerUrlCopyListener();
+
     // 窗口 resize 补偿
     window.addEventListener(
       'resize',
-      () => {
-        if (
-          document.querySelector(
-            `${SELECTORS.scriptEditorContainer}.${CSS_CLASSES.maximized}`,
-          )
-        ) {
+      (e) => {
+        // 防止代码分发原生 `resize` 事件时发生死循环调用栈溢出问题
+        if (!e.isTrusted) return;
+
+        if (document.querySelector(`.${CSS_CLASSES.maximized}`)) {
           requestAceResize();
         }
       },

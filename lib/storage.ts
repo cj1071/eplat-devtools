@@ -44,7 +44,7 @@ export function writeFabEnabled(enabled: boolean): void {
 
 /** 剪贴板历史条目 */
 export interface ClipboardEntry {
-  type: 'url' | 'snippet';
+  type: 'url';
   content: string;
   label?: string;
   timestamp: number;
@@ -54,7 +54,14 @@ export interface ClipboardEntry {
 export async function readClipboard(): Promise<ClipboardEntry[]> {
   try {
     const data = await chrome.storage.local.get([STORAGE_KEYS.clipboard]);
-    return data[STORAGE_KEYS.clipboard] ?? [];
+    const items = data[STORAGE_KEYS.clipboard];
+    if (!Array.isArray(items)) return [];
+    return items.filter(
+      (item): item is ClipboardEntry =>
+        item?.type === 'url' &&
+        typeof item?.content === 'string' &&
+        typeof item?.timestamp === 'number',
+    );
   } catch {
     return [];
   }
@@ -64,13 +71,15 @@ export async function readClipboard(): Promise<ClipboardEntry[]> {
 export async function appendClipboard(
   entry: ClipboardEntry,
 ): Promise<void> {
-  const items = await readClipboard();
+  const items = (await readClipboard()).filter(
+    (item) => item.content !== entry.content,
+  );
   items.unshift(entry);
   if (items.length > 50) items.length = 50;
-  chrome.storage.local.set({ [STORAGE_KEYS.clipboard]: items });
+  await chrome.storage.local.set({ [STORAGE_KEYS.clipboard]: items });
 }
 
 /** 清空剪贴板 */
-export function clearClipboard(): void {
-  chrome.storage.local.set({ [STORAGE_KEYS.clipboard]: [] });
+export async function clearClipboard(): Promise<void> {
+  await chrome.storage.local.set({ [STORAGE_KEYS.clipboard]: [] });
 }

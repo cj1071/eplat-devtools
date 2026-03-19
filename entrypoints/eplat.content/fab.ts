@@ -12,50 +12,24 @@ function createFab(): HTMLElement {
   fab.className = CSS_CLASSES.fab;
   fab.innerHTML = `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>`;
   fab.title = 'eplat-devtools';
+  // 使用 right/bottom 锚定，让浏览器原生 sidepanel 挤压页面时自然跟随右边界。
+  fab.style.right = '16px';
+  fab.style.bottom = '80px';
+  fab.style.left = 'auto';
+  fab.style.top = 'auto';
 
-  // 点击打开 sidepanel
   fab.addEventListener('click', () => {
     sendToBackground({ type: MSG.openSidepanel });
   });
-
-  // 支持拖拽
-  let isDragging = false;
-  let startY = 0;
-  let startTop = 0;
-
-  fab.addEventListener('mousedown', (e) => {
-    isDragging = false;
-    startY = e.clientY;
-    startTop = fab.getBoundingClientRect().top;
-
-    const onMove = (ev: MouseEvent) => {
-      const dy = Math.abs(ev.clientY - startY);
-      if (dy > 4) isDragging = true;
-      if (isDragging) {
-        fab.style.top = `${startTop + (ev.clientY - startY)}px`;
-        fab.style.bottom = 'auto';
-      }
-    };
-    const onUp = () => {
-      document.removeEventListener('mousemove', onMove);
-      document.removeEventListener('mouseup', onUp);
-    };
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
-  });
-
-  fab.addEventListener('click', (e) => {
-    if (isDragging) {
-      e.stopPropagation();
-      isDragging = false;
-    }
-  }, true);
 
   return fab;
 }
 
 /** 挂载悬浮球 */
 export async function mountFab() {
+  // 只在顶级窗口挂载悬浮球，避免 iframe 中重复注入
+  if (window.self !== window.top) return;
+
   const enabled = await readFabEnabled();
   if (!enabled) {
     removeFab();

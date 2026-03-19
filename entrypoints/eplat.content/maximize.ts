@@ -1,6 +1,6 @@
 // 最大化逻辑模块
 
-import { CSS_CLASSES, SELECTORS } from '@/lib/constants';
+import { CSS_CLASSES, SELECTORS, ICONS, ALT_KEY } from '@/lib/constants';
 import { applyZoom, requestAceResize } from './zoom';
 
 /** 判断容器是否处于最大化状态 */
@@ -15,8 +15,8 @@ export function updateMaximizeButtons() {
     .forEach((button) => {
       const container = button.closest(SELECTORS.scriptEditorContainer);
       const maximized = isContainerMaximized(container);
-      button.textContent = maximized ? '还原' : '最大';
-      button.title = maximized ? '还原 (Alt+Enter)' : '最大化 (Alt+Enter)';
+      button.innerHTML = maximized ? ICONS.restore : ICONS.maximize;
+      button.title = maximized ? `还原 (${ALT_KEY}+Enter)` : `最大化 (${ALT_KEY}+Enter)`;
       button.setAttribute('aria-pressed', maximized ? 'true' : 'false');
     });
 }
@@ -28,9 +28,7 @@ export function toggleMaximize(container: Element | null) {
 
   // 先移除所有已最大化的容器
   document
-    .querySelectorAll(
-      `${SELECTORS.scriptEditorContainer}.${CSS_CLASSES.maximized}`,
-    )
+    .querySelectorAll(`.${CSS_CLASSES.maximized}`)
     .forEach((node) => {
       node.classList.remove(CSS_CLASSES.maximized);
     });

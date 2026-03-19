@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { readClipboard, clearClipboard } from '@/lib/storage';
 import type { ClipboardEntry } from '@/lib/storage';
+import { STORAGE_KEYS } from '@/lib/constants';
 
 export default function ClipboardTab() {
   const [items, setItems] = useState<ClipboardEntry[]>([]);
@@ -8,9 +9,22 @@ export default function ClipboardTab() {
   useEffect(() => {
     loadClipboard();
     // 监听 storage 变化实时更新
-    const listener = (changes: Record<string, chrome.storage.StorageChange>) => {
-      if (changes.eplat_devtools_clipboard) {
-        setItems(changes.eplat_devtools_clipboard.newValue ?? []);
+    const listener = (
+      changes: Record<string, chrome.storage.StorageChange>,
+      areaName: string,
+    ) => {
+      if (areaName === 'local' && changes[STORAGE_KEYS.clipboard]) {
+        const next = changes[STORAGE_KEYS.clipboard].newValue;
+        setItems(
+          Array.isArray(next)
+            ? next.filter(
+                (item): item is ClipboardEntry =>
+                  item?.type === 'url' &&
+                  typeof item?.content === 'string' &&
+                  typeof item?.timestamp === 'number',
+              )
+            : [],
+        );
       }
     };
     chrome.storage.onChanged.addListener(listener);
@@ -22,12 +36,12 @@ export default function ClipboardTab() {
     setItems(data);
   }
 
-  function handleCopy(content: string) {
-    navigator.clipboard.writeText(content);
+  async function handleCopy(content: string) {
+    await navigator.clipboard.writeText(content);
   }
 
-  function handleClear() {
-    clearClipboard();
+  async function handleClear() {
+    await clearClipboard();
     setItems([]);
   }
 
@@ -44,7 +58,7 @@ export default function ClipboardTab() {
     <div>
       <div className="section-header">
         <span style={{ fontWeight: 600, color: 'var(--text-white)' }}>
-          📋 剪贴板历史
+          📋 URL 历史
         </span>
         {items.length > 0 && (
           <button className="btn" onClick={handleClear}>
@@ -54,13 +68,13 @@ export default function ClipboardTab() {
       </div>
 
       {items.length === 0 ? (
-        <div className="empty-state">暂无剪贴板记录</div>
+        <div className="empty-state">暂无相对路径记录</div>
       ) : (
         items.map((item, idx) => (
           <div key={idx} className="clipboard-item">
             <div style={{ flex: 1, minWidth: 0 }}>
               <div className="clipboard-content">
-                {item.type === 'url' ? '🔗 ' : '💻 '}
+                🔗{' '}
                 {item.content}
               </div>
               <div className="clipboard-time">

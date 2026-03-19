@@ -2,7 +2,7 @@
   "name": "eplat-devtools",
   "description": "eplat 平台脚本编辑器增强工具",
   "private": true,
-  "version": "1.0.0",
+  "version": "0.0.1-test",
   "type": "module",
   "scripts": {
     "dev": "wxt",

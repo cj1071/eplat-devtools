@@ -1,56 +1,63 @@
 // 快捷键管理模块
 
-import { EVENTS } from '@/lib/constants';
-import { getAceEditorSelector, hasScriptEditor, isInputLike, getActiveScriptContainer } from './selectors';
+import { EVENTS, SELECTORS } from '@/lib/constants';
+import { getAceEditorSelector, isInputLike, getActiveScriptContainer } from './selectors';
 import { increaseZoom, decreaseZoom, resetZoom } from './zoom';
 import { toggleMaximize } from './maximize';
 
-/** 键盘事件处理 */
+/** 检测页面是否包含任何脚本编辑器（含 geDialog） */
+function hasAnyEditor(): boolean {
+  return Boolean(
+    document.querySelector(SELECTORS.scriptEditor) ||
+    document.querySelector(`${SELECTORS.geDialog} .ace_editor`),
+  );
+}
+
+/** 键盘事件处理 — 使用 event.code 保证 Mac Option 键兼容 */
 export function onKeyDown(event: KeyboardEvent) {
-  if (!hasScriptEditor()) return;
+  if (!hasAnyEditor()) return;
   if (!event.altKey || event.metaKey || event.ctrlKey) return;
 
-  // Alt+Enter: 最大化/还原
-  if (event.key === 'Enter') {
+  // Alt/Option + Enter: 最大化/还原
+  if (event.code === 'Enter') {
     event.preventDefault();
     toggleMaximize(getActiveScriptContainer(event.target as Element));
     return;
   }
 
-  // Alt+F: 唤出查找框
-  if (event.key === 'f' || event.key === 'F') {
+  // Alt/Option + F: 唤出查找框
+  if (event.code === 'KeyF') {
     event.preventDefault();
     window.dispatchEvent(new CustomEvent(EVENTS.aceFind));
     return;
   }
 
-  // 如果焦点在输入框（非快捷键相关键），跳过
+  // 如果焦点在输入框（非缩放相关键），跳过
   if (
     isInputLike(event.target as Element) &&
-    event.key !== '0' &&
-    event.key !== '-' &&
-    event.key !== '=' &&
-    event.key !== '+'
+    event.code !== 'Digit0' &&
+    event.code !== 'Minus' &&
+    event.code !== 'Equal'
   ) {
     return;
   }
 
-  // Alt+=/+: 放大
-  if (event.key === '=' || event.key === '+') {
+  // Alt/Option + =: 放大
+  if (event.code === 'Equal') {
     event.preventDefault();
     increaseZoom();
     return;
   }
 
-  // Alt+-: 缩小
-  if (event.key === '-') {
+  // Alt/Option + -: 缩小
+  if (event.code === 'Minus') {
     event.preventDefault();
     decreaseZoom();
     return;
   }
 
-  // Alt+0: 重置
-  if (event.key === '0') {
+  // Alt/Option + 0: 重置
+  if (event.code === 'Digit0') {
     event.preventDefault();
     resetZoom();
   }

@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { readFabEnabled, writeFabEnabled } from '@/lib/storage';
+import { IS_MAC } from '@/lib/constants';
 
 export default function SettingsTab() {
+  const isMac = IS_MAC;
   const [fabEnabled, setFabEnabled] = useState(true);
   const [importStatus, setImportStatus] = useState('');
 
@@ -68,6 +70,78 @@ export default function SettingsTab() {
               {fabEnabled ? '已开启' : '已关闭'}
             </span>
           </label>
+        </div>
+      </div>
+
+      {/* 快捷键 */}
+      <div className="settings-section">
+        <div className="settings-title">快捷键设置</div>
+
+        {/* 提示信息 */}
+        <div style={{
+          padding: '8px 0',
+          marginBottom: '16px',
+          borderLeft: '3px solid #e4e7ed',
+          paddingLeft: '12px',
+          fontSize: '13px',
+          color: '#606266',
+          lineHeight: '1.5'
+        }}>
+          请注意：目前为页面内生效的通用功能快捷键。
+        </div>
+
+        {/* 快捷键列表卡片 */}
+        <div style={{
+          border: '1px solid #ebeef5',
+          borderRadius: '4px',
+          padding: '16px',
+          background: '#fafafa'
+        }}>
+          <div style={{ fontSize: '12px', color: '#909399', marginBottom: '16px' }}>
+            常用功能快捷键
+          </div>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {[
+              ['放大', isMac ? '⌥ =' : 'Alt + ='],
+              ['缩小', isMac ? '⌥ -' : 'Alt + -'],
+              ['重置缩放', isMac ? '⌥ 0' : 'Alt + 0'],
+              ['最大化 / 还原', isMac ? '⌥ Enter' : 'Alt + Enter'],
+              ['局部查找', isMac ? '⌥ F' : 'Alt + F'],
+              ['滚轮缩放', isMac ? '⌘ 滚轮' : 'Ctrl + 滚轮'],
+            ].map(([desc, key]) => (
+              <div key={key} style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '8px 0',
+                borderBottom: '1px dashed #ebeef5'
+              }}>
+                <span style={{ fontSize: '13px', color: '#606266' }}>{desc}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <kbd style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: '28px',
+                    padding: '0 10px',
+                    background: '#e9ecef',
+                    border: '1px solid #dee2e6',
+                    borderRadius: '4px',
+                    fontSize: '13px',
+                    fontFamily: 'system-ui, -apple-system, sans-serif',
+                    color: '#495057',
+                    minWidth: '60px'
+                  }}>{key}</kbd>
+                  <span style={{ 
+                    color: '#c0c4cc', 
+                    fontSize: '12px',
+                    cursor: 'help'
+                  }} title="页面编辑器内触发">?</span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 

@@ -7,11 +7,22 @@ export default defineConfig({
     name: 'eplat-devtools',
     description: 'eplat 平台脚本编辑器增强工具',
     permissions: ['storage', 'sidePanel'],
-    action: {},
+    icons: {
+      16: 'icons/icon-16.png',
+      32: 'icons/icon-32.png',
+      48: 'icons/icon-48.png',
+      128: 'icons/icon-128.png',
+    },
+    action: {
+      default_icon: {
+        16: 'icons/icon-16.png',
+        32: 'icons/icon-32.png',
+      },
+    },
     web_accessible_resources: [
       {
         resources: ['ace-bridge.js'],
-        matches: ['http://*/eplat/*', 'https://*/eplat/*'],
+        matches: ['http://*/*', 'https://*/*'],
       },
     ],
   },

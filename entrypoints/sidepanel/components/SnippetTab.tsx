@@ -59,19 +59,48 @@ const BUILTIN_SNIPPETS: SnippetCategory[] = [
 export default function SnippetTab() {
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState<SnippetItem | null>(null);
+  const [status, setStatus] = useState<{
+    tone: 'success' | 'error';
+    text: string;
+  } | null>(null);
 
   const filtered = searchSnippets(BUILTIN_SNIPPETS, query);
 
   const handleInsert = async (item: SnippetItem) => {
     const code = getSnippetCode(item);
-    await sendToBackground({
+    const result = await sendToBackground({
       type: MSG.insertSnippet,
       payload: { code },
+    });
+
+    if (
+      result &&
+      typeof result === 'object' &&
+      'ok' in result &&
+      result.ok === false
+    ) {
+      setStatus({
+        tone: 'error',
+        text:
+          typeof result.error === 'string' ? result.error : '插入失败，请稍后重试',
+      });
+      return;
+    }
+
+    setStatus({
+      tone: 'success',
+      text: `已插入 ${item.name}`,
     });
   };
 
   return (
     <div>
+      {status && (
+        <div className={`notice notice-${status.tone}`}>
+          {status.text}
+        </div>
+      )}
+
       <input
         className="search-bar"
         type="text"
@@ -103,7 +132,7 @@ export default function SnippetTab() {
                   className="btn btn-primary"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleInsert(item);
+                    void handleInsert(item);
                   }}
                 >
                   插入

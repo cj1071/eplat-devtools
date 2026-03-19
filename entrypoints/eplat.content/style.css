@@ -11,62 +11,72 @@
 }
 
 /* ===== 缩放工具栏 ===== */
-.scriptEditorHeader .dz-script-zoom-toolbar {
+.dz-script-zoom-toolbar {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px; /* 加大图标按钮间距 */
   float: right;
-  margin-top: 2px;
-  margin-right: 44px;
-  padding: 2px 8px;
-  border: 1px solid rgba(31, 45, 61, 0.2);
+  margin-top: 4px;
+  margin-right: 44px; /* 保留原生 X 按钮的空间 */
+}
+
+.dz-script-zoom-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.94);
-}
-
-.scriptEditorHeader .dz-script-zoom-btn {
-  min-width: 24px;
-  height: 22px;
-  border: 1px solid #d9d9d9;
-  border-radius: 3px;
-  background: #ffffff;
-  color: #1f2d3d;
-  font-size: 12px;
-  line-height: 20px;
+  background: transparent;
+  color: #909399; /* 使用浅灰色系融入背景 */
   cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
 }
 
-.scriptEditorHeader .dz-script-zoom-btn:hover {
-  border-color: #409eff;
-  color: #409eff;
+.dz-script-zoom-btn svg {
+  pointer-events: none;
 }
 
-.scriptEditorHeader .dz-script-zoom-label {
-  min-width: 48px;
+.dz-script-zoom-btn:hover {
+  background-color: transparent;
+  color: #409eff; /* 悬浮亮色强调 */
+}
+
+.dz-script-zoom-label {
+  min-width: 44px;
   text-align: center;
-  color: #303133;
-  font-size: 12px;
-  font-weight: 600;
+  color: #606266;
+  font-size: 13px;
+  font-weight: 500;
   user-select: none;
+  line-height: 28px;
 }
 
-.scriptEditorHeader .dz-script-maximize-btn {
-  min-width: 42px;
-  font-size: 11px;
+/* ===== 修复原生关闭按钮坐标偏移 ===== */
+.scriptEditorContainer.dz-script-editor-maximized .scriptEditorHeader > button,
+.geDialog.dz-script-editor-maximized .editHtmlTemplate_header > button {
+  top: 20px !important;
 }
 
 /* ===== 最大化布局 ===== */
-.scriptEditorContainer.dz-script-editor-maximized {
+.scriptEditorContainer.dz-script-editor-maximized,
+.geDialog.dz-script-editor-maximized {
   position: fixed !important;
-  inset: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
-  max-width: none !important;
-  max-height: none !important;
+  z-index: 2147483647 !important;
+  background: #ffffff !important;
   margin: 0 !important;
-  padding: 12px !important;
-  box-sizing: border-box !important;
-  z-index: 2147483000 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 .scriptEditorContainer.dz-script-editor-maximized .el-dialog {
@@ -83,15 +93,19 @@
 }
 
 .scriptEditorContainer.dz-script-editor-maximized .scriptEditor,
-.scriptEditorContainer.dz-script-editor-maximized .scriptEditorDialog {
+.scriptEditorContainer.dz-script-editor-maximized .scriptEditorDialog,
+.geDialog.dz-script-editor-maximized > div,
+.geDialog.dz-script-editor-maximized #editHtmlTemplate {
   width: 100% !important;
   height: 100% !important;
   min-height: 0 !important;
   display: flex !important;
   flex-direction: column !important;
+  flex: 1 1 auto !important;
 }
 
-.scriptEditorContainer.dz-script-editor-maximized .scriptEditorHeader {
+.scriptEditorContainer.dz-script-editor-maximized .scriptEditorHeader,
+.geDialog.dz-script-editor-maximized .editHtmlTemplate_header {
   cursor: default !important;
   flex: 0 0 auto !important;
 }
@@ -105,14 +119,17 @@
 
 .scriptEditorContainer.dz-script-editor-maximized #globalScriptEditor,
 .scriptEditorContainer.dz-script-editor-maximized .ace_editor,
-.scriptEditorContainer.dz-script-editor-maximized .ace_scroller {
+.scriptEditorContainer.dz-script-editor-maximized .ace_scroller,
+.geDialog.dz-script-editor-maximized .ace_editor,
+.geDialog.dz-script-editor-maximized .ace_scroller {
   flex: 1 1 auto !important;
   width: 100% !important;
   height: 100% !important;
   min-height: 280px !important;
 }
 
-.scriptEditorContainer.dz-script-editor-maximized .ace_content {
+.scriptEditorContainer.dz-script-editor-maximized .ace_content,
+.geDialog.dz-script-editor-maximized .ace_content {
   min-height: 100% !important;
 }
 
@@ -125,20 +142,22 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #ffffff;
+  background: #ffffff;
+  color: #409eff;
+  border: 1px solid #dcdfe6;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   user-select: none;
 }
 
 .eplat-devtools-fab:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 24px rgba(102, 126, 234, 0.6);
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  opacity: 1 !important;
 }
 
 .eplat-devtools-fab:active {

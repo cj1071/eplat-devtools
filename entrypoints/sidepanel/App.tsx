@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SnippetTab from './components/SnippetTab';
 import ClipboardTab from './components/ClipboardTab';
 import SettingsTab from './components/SettingsTab';
@@ -13,6 +13,17 @@ const TABS: { key: TabKey; label: string; icon: string }[] = [
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabKey>('snippets');
+
+  useEffect(() => {
+    // 建立长连接，用于接收 Background 的控制指令（如关闭 sidepanel）
+    const port = chrome.runtime.connect({ name: 'sidepanel_port' });
+    port.onMessage.addListener((msg) => {
+      if (msg.type === 'CLOSE_SIDEPANEL') {
+        window.close();
+      }
+    });
+    return () => port.disconnect();
+  }, []);
 
   return (
     <div className="app">
