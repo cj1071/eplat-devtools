@@ -9,8 +9,20 @@ Thumbs.db
 
 # Local tooling
 .omc
+.claude
+.kiro
+.cursor
+.vscode
+.idea
 
 # Local memory
 memory
+docs
 
-memory
+
+logs
+*.log
+AGENTS.md
+task.md
+
+
