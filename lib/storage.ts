@@ -118,3 +118,12 @@ export async function writeCustomSnippets(
     // 静默失败
   }
 }
+
+/** 清空自定义代码片段 */
+export async function clearCustomSnippets(): Promise<void> {
+  try {
+    await chrome.storage.local.set({ [STORAGE_KEYS.customSnippets]: [] });
+  } catch {
+    // 静默失败
+  }
+}

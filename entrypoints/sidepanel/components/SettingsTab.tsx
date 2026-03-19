@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import packageInfo from '@/package.json';
 import { IS_MAC, STORAGE_KEYS } from '@/lib/constants';
 import { BUILTIN_SNIPPETS, TEMPLATE_SAMPLE_JSON } from '@/lib/snippet-data';
@@ -9,12 +9,14 @@ import {
   type SnippetCategory,
 } from '@/lib/snippet-engine';
 import {
+  clearCustomSnippets,
   readCustomSnippets,
   readFabEnabled,
   writeCustomSnippets,
   writeFabEnabled,
 } from '@/lib/storage';
-import TemplateEditorModal from './TemplateEditorModal';
+
+const TemplateEditorModal = lazy(() => import('./TemplateEditorModal'));
 
 const SHORTCUTS = [
   ['放大', IS_MAC ? '⌥ =' : 'Alt + ='],
@@ -70,6 +72,16 @@ export default function SettingsTab() {
     return () => chrome.storage.onChanged.removeListener(listener);
   }, []);
 
+  useEffect(() => {
+    if (!templateStatus) return;
+
+    const timer = window.setTimeout(() => {
+      setTemplateStatus(null);
+    }, 3000);
+
+    return () => window.clearTimeout(timer);
+  }, [templateStatus]);
+
   function handleFabToggle() {
     const next = !fabEnabled;
     setFabEnabled(next);
@@ -108,14 +120,6 @@ export default function SettingsTab() {
     setIsEditorOpen(true);
   }
 
-  function handleResetExample() {
-    setTemplateStatus({
-      tone: 'success',
-      text: '已载入示例模板，可继续修改后保存',
-    });
-    return TEMPLATE_SAMPLE_JSON;
-  }
-
   async function handleSaveTemplates(text: string) {
     try {
       const parsed = parseSnippetCategoriesJson(text);
@@ -131,6 +135,15 @@ export default function SettingsTab() {
         text: error instanceof Error ? error.message : '保存失败，请稍后重试',
       });
     }
+  }
+
+  async function handleClearSavedTemplates() {
+    await clearCustomSnippets();
+    setCustomSnippets([]);
+    setTemplateStatus({
+      tone: 'success',
+      text: '已清空已保存的自定义模板',
+    });
   }
 
   return (
@@ -200,10 +213,24 @@ export default function SettingsTab() {
 
           <div className="template-help">
             <div className="template-help-title">字段说明</div>
-            <div className="template-help-line">`category`：分类名称</div>
-            <div className="template-help-line">`icon`：分类前缀图标，可为空字符串</div>
-            <div className="template-help-line">`items`：片段列表，至少 1 项</div>
-            <div className="template-help-line">`id / name / description / tags / template`：单条片段必填字段</div>
+            <div className="template-help-grid">
+              <div className="template-help-row">
+                <code className="template-help-key">category</code>
+                <div className="template-help-desc">分类名称</div>
+              </div>
+              <div className="template-help-row">
+                <code className="template-help-key">icon</code>
+                <div className="template-help-desc">分类前缀图标，可为空字符串</div>
+              </div>
+              <div className="template-help-row">
+                <code className="template-help-key">items</code>
+                <div className="template-help-desc">片段列表，至少 1 项</div>
+              </div>
+              <div className="template-help-row template-help-row-wide">
+                <code className="template-help-key">id / name / description / tags / template</code>
+                <div className="template-help-desc">单条片段必填字段</div>
+              </div>
+            </div>
           </div>
 
           {templateStatus && (
@@ -227,14 +254,16 @@ export default function SettingsTab() {
       </div>
 
       {isEditorOpen && (
-        <TemplateEditorModal
-          initialText={editorSeed}
-          status={templateStatus}
-          onClose={() => setIsEditorOpen(false)}
-          onDownload={(text) => downloadJsonFile('eplat-custom-snippets.json', text)}
-          onResetExample={handleResetExample}
-          onSave={handleSaveTemplates}
-        />
+        <Suspense fallback={<div className="notice notice-success">正在加载 JSON 编辑器...</div>}>
+          <TemplateEditorModal
+            initialText={editorSeed}
+            status={templateStatus}
+            onClose={() => setIsEditorOpen(false)}
+            onDownload={(text) => downloadJsonFile('eplat-custom-snippets.json', text)}
+            onSave={handleSaveTemplates}
+            onClearSaved={handleClearSavedTemplates}
+          />
+        </Suspense>
       )}
     </div>
   );

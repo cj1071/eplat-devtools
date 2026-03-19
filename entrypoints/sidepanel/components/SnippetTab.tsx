@@ -66,6 +66,16 @@ export default function SnippetTab({ activeTabStatus }: SnippetTabProps) {
     return () => chrome.storage.onChanged.removeListener(listener);
   }, []);
 
+  useEffect(() => {
+    if (!status) return;
+
+    const timer = window.setTimeout(() => {
+      setStatus(null);
+    }, 3000);
+
+    return () => window.clearTimeout(timer);
+  }, [status]);
+
   const handleInsert = async (item: SnippetItem) => {
     if (!activeTabStatus.canInsert) {
       setStatus({ tone: 'error', text: activeTabStatus.reason });
