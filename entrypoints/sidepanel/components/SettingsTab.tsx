@@ -1,5 +1,4 @@
 import { Suspense, lazy, useEffect, useState } from 'react';
-import packageInfo from '@/package.json';
 import { IS_MAC, STORAGE_KEYS } from '@/lib/constants';
 import { BUILTIN_SNIPPETS, TEMPLATE_SAMPLE_JSON } from '@/lib/snippet-data';
 import {
@@ -157,7 +156,6 @@ export default function SettingsTab() {
           <div className="panel-hero-title">偏好与模板管理</div>
           <div className="panel-hero-subtitle">维护悬浮球、快捷键提示，以及自定义模板的导入、下载与编辑。</div>
         </div>
-        <div className="panel-hero-metric">v{packageInfo.version}</div>
       </div>
 
       <div className="settings-section">
@@ -263,10 +261,6 @@ export default function SettingsTab() {
               <div className="template-help-row">
                 <code className="template-help-key">category</code>
                 <div className="template-help-desc">分类名称</div>
-              </div>
-              <div className="template-help-row">
-                <code className="template-help-key">icon</code>
-                <div className="template-help-desc">分类前缀图标，可为空字符串</div>
               </div>
               <div className="template-help-row">
                 <code className="template-help-key">items</code>

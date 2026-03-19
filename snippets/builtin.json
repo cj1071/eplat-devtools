@@ -1,7 +1,6 @@
 [
   {
     "category": "组件渲染",
-    "icon": "🧩",
     "items": [
       {
         "id": "custom-element-render-when-defined",
@@ -14,7 +13,6 @@
   },
   {
     "category": "页面生命周期",
-    "icon": "⚡",
     "items": [
       {
         "id": "window-dv-ready",

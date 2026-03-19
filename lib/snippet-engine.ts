@@ -11,7 +11,7 @@ export interface SnippetItem {
 
 export interface SnippetCategory {
   category: string;
-  icon: string;
+  icon?: string;
   items: SnippetItem[];
 }
 
@@ -70,7 +70,7 @@ function parseSnippetCategory(value: unknown, index: number): SnippetCategory {
 
   return {
     category: readString(value.category, `${path}.category`),
-    icon: readString(value.icon, `${path}.icon`, { allowEmpty: true }),
+    icon: typeof value.icon === 'string' ? value.icon : '',
     items: items.map((item, itemIndex) =>
       parseSnippetItem(item, `${path}.items[${itemIndex}]`),
     ),

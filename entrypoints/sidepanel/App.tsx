@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import packageInfo from '@/package.json';
 import type { ActiveTabStatus, SidepanelPortMessage } from '@/lib/editor-status';
 import SnippetTab from './components/SnippetTab';
 import ClipboardTab from './components/ClipboardTab';
@@ -61,6 +62,7 @@ export default function App() {
             <div className="app-eyebrow">eplat-devtools</div>
             <div className="app-title-row">
               <h1 className="app-title">{activeTabMeta.label}</h1>
+              <span className="app-version-chip">v{packageInfo.version}</span>
               <span className={`app-status-chip ${activeTab === 'snippets' && activeTabStatus.canInsert ? 'is-ready' : ''}`}>
                 {activeTab === 'snippets'
                   ? activeTabStatus.canInsert
