@@ -21,8 +21,7 @@ function toRelativeEplatPath(text: string): string | null {
     if (url.origin !== window.location.origin) return null;
     if (!url.pathname.startsWith('/eplat/')) return null;
 
-    const relativePath = `${url.pathname.slice('/eplat'.length)}${url.search}${url.hash}`;
-    return relativePath || '/';
+    return `${url.pathname}${url.search}${url.hash}`;
   } catch {
     return null;
   }
