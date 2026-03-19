@@ -48,7 +48,6 @@ export const ZOOM = {
 export const EVENTS = {
   aceZoom: '__dz_script_editor_zoom__',
   aceResize: '__dz_script_editor_resize__',
-  aceFind: '__dz_script_editor_find__',
   aceInsert: '__dz_script_editor_insert__',
 } as const;
 

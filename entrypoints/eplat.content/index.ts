@@ -7,7 +7,7 @@ import {
 } from '@/lib/extension-context';
 import { initZoom, applyZoom, requestAceResize } from './zoom';
 import { refreshUi, updateToolbarLabel } from './toolbar';
-import { registerKeyboard } from './keyboard';
+import { openFindPanel, registerKeyboard } from './keyboard';
 import { mountFab } from './fab';
 import { registerUrlCopyListener } from './url-copy';
 import type { ExtensionMessage } from '@/lib/messaging';
@@ -99,9 +99,7 @@ export default defineContentScript({
             sendResponse({ ok: true });
           }
           if (message.type === MSG.openFind) {
-            window.dispatchEvent(
-              new CustomEvent('__dz_script_editor_find__'),
-            );
+            openFindPanel(document.activeElement as Element | null);
             sendResponse({ ok: true });
           }
           return false;

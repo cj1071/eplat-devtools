@@ -24,6 +24,7 @@ const SHORTCUTS = [
   ['重置缩放', IS_MAC ? '⌥ 0' : 'Alt + 0'],
   ['最大化 / 还原', IS_MAC ? '⌥ Enter' : 'Alt + Enter'],
   ['局部查找', IS_MAC ? '⌥ F' : 'Alt + F'],
+  ['局部替换', IS_MAC ? '⌥ R' : 'Alt + R'],
   ['滚轮缩放', IS_MAC ? '⌘ 滚轮' : 'Ctrl + 滚轮'],
 ] as const;
 

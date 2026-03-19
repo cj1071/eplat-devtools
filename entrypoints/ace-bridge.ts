@@ -9,7 +9,6 @@ export default defineUnlistedScript(() => {
     '.scriptEditor .ace_editor, #globalScriptEditor.ace_editor, .scriptEditorContainer .ace_editor, .geDialog .ace_editor';
   const ACE_ZOOM_EVENT = '__dz_script_editor_zoom__';
   const ACE_RESIZE_EVENT = '__dz_script_editor_resize__';
-  const ACE_FIND_EVENT = '__dz_script_editor_find__';
   const ACE_INSERT_EVENT = '__dz_script_editor_insert__';
 
   /** 获取页面上所有 Ace Editor 实例 */
@@ -34,8 +33,7 @@ export default defineUnlistedScript(() => {
     const editors = getEditors();
     if (editors.length === 0) return null;
 
-    // 尝试找到焦点编辑器
-    const focused = editors.find((e) => e.isFocused && e.isFocused());
+    const focused = editors.find((editor) => editor.isFocused && editor.isFocused());
     return focused || editors[editors.length - 1];
   }
 
@@ -91,14 +89,6 @@ export default defineUnlistedScript(() => {
     setTimeout(resizeEditors, 180);
   });
 
-  // 查找事件
-  window.addEventListener(ACE_FIND_EVENT, () => {
-    const editor = getActiveEditor();
-    if (editor && typeof editor.execCommand === 'function') {
-      editor.execCommand('find');
-    }
-  });
-
   // 插入代码事件
   window.addEventListener(ACE_INSERT_EVENT, ((event: CustomEvent) => {
     const editor = getActiveEditor();
@@ -122,11 +112,10 @@ export default defineUnlistedScript(() => {
         const range = new Range(startRow, 0, endRow, Infinity);
         const markerId = session.addMarker(
           range,
-          'ace_active-line', // 复用 Ace 内置高亮样式
+          'ace_active-line',
           'fullLine',
           false,
         );
-        // 3 秒后移除高亮
         setTimeout(() => {
           session.removeMarker(markerId);
         }, 3000);
