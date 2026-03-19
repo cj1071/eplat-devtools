@@ -48,6 +48,7 @@ jobs:
             chrome --pack-extension=.output/chrome-mv3 --no-sandbox
           fi
           mv .output/chrome-mv3.crx .output/eplat-devtools.crx 2>/dev/null || true
+          zip -j .output/eplat-devtools.crx.zip .output/eplat-devtools.crx
         env:
           CRX_PRIVATE_KEY: ${{ secrets.CRX_PRIVATE_KEY }}
 
