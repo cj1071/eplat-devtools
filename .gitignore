@@ -2,6 +2,9 @@
 .output
 .wxt
 node_modules
+dist
+build
+coverage
 
 # OS
 .DS_Store
@@ -15,14 +18,43 @@ Thumbs.db
 .vscode
 .idea
 
+# Environment
+.env
+.env.*
+!.env.example
+!.env.*.example
+
 # Local memory
 memory
 docs
 
-
+# Logs
 logs
 *.log
+*.out
+pnpm-debug.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Caches
+.cache
+.parcel-cache
+.turbo
+.eslintcache
+.stylelintcache
+
+# Temp
+tmp
+temp
+*.tmp
+*.temp
+
+# Editor swap files
+*.swp
+*.swo
+*~
+
+# Local-only guides and task notes
 AGENTS.md
 task.md
-
-
