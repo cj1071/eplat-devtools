@@ -57,7 +57,7 @@
 /* ===== 修复原生关闭按钮坐标偏移 ===== */
 .scriptEditorContainer.dz-script-editor-maximized .scriptEditorHeader > button,
 .geDialog.dz-script-editor-maximized .editHtmlTemplate_header > button {
-  top: 20px !important;
+  top: 10px !important;
 }
 
 /* ===== 最大化布局 ===== */
@@ -108,6 +108,11 @@
 .geDialog.dz-script-editor-maximized .editHtmlTemplate_header {
   cursor: default !important;
   flex: 0 0 auto !important;
+}
+
+.geDialog.dz-script-editor-maximized #editHtmlTemplate > div:nth-child(2),
+.geDialog.dz-script-editor-maximized #editHtmlTemplate > div:nth-child(2) > div {
+  height: 100% !important;
 }
 
 .scriptEditorContainer.dz-script-editor-maximized .scriptEditorDialog > *:last-child {
