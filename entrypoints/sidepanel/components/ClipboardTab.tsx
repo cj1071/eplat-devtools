@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { readClipboard, clearClipboard } from '@/lib/storage';
 import type { ClipboardEntry } from '@/lib/storage';
 import { STORAGE_KEYS } from '@/lib/constants';
+import UiIcon from './UiIcon';
 
 export default function ClipboardTab() {
   const [items, setItems] = useState<ClipboardEntry[]>([]);
@@ -56,10 +57,27 @@ export default function ClipboardTab() {
 
   return (
     <div>
+      <div className="panel-hero">
+        <div className="panel-hero-icon">
+          <UiIcon name="history" size={18} />
+        </div>
+        <div className="panel-hero-copy">
+          <div className="panel-hero-title">URL 历史</div>
+          <div className="panel-hero-subtitle">查看最近复制出的相对路径，并快速再次复制。</div>
+        </div>
+        <div className="panel-hero-metric">{items.length} 条</div>
+      </div>
+
       <div className="section-header">
-        <span style={{ fontWeight: 600, color: 'var(--text-white)' }}>
-          📋 URL 历史
-        </span>
+        <div className="section-header-copy">
+          <span className="section-header-icon">
+            <UiIcon name="clipboard" size={14} />
+          </span>
+          <div>
+            <div className="section-header-title">相对路径记录</div>
+            <div className="section-header-subtitle">保留最近 50 条可复用路径</div>
+          </div>
+        </div>
         {items.length > 0 && (
           <button className="btn" onClick={handleClear}>
             清空
@@ -74,7 +92,9 @@ export default function ClipboardTab() {
           <div key={idx} className="clipboard-item">
             <div style={{ flex: 1, minWidth: 0 }}>
               <div className="clipboard-content">
-                🔗{' '}
+                <span className="clipboard-prefix">
+                  <UiIcon name="link" size={13} />
+                </span>
                 {item.content}
               </div>
               <div className="clipboard-time">

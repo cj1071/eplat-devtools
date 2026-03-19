@@ -10,6 +10,7 @@ import {
 import { sendToBackground } from '@/lib/messaging';
 import { BUILTIN_SNIPPETS } from '@/lib/snippet-data';
 import { readCustomSnippets } from '@/lib/storage';
+import UiIcon from './UiIcon';
 
 interface SnippetTabProps {
   activeTabStatus: ActiveTabStatus;
@@ -120,6 +121,17 @@ export default function SnippetTab({ activeTabStatus }: SnippetTabProps) {
 
   return (
     <div>
+      <div className="panel-hero">
+        <div className="panel-hero-icon">
+          <UiIcon name="snippets" size={18} />
+        </div>
+        <div className="panel-hero-copy">
+          <div className="panel-hero-title">模板片段库</div>
+          <div className="panel-hero-subtitle">优先插入可复用骨架，再补全业务逻辑，避免重复手写。</div>
+        </div>
+        <div className="panel-hero-metric">{builtinCount + customCount} 条</div>
+      </div>
+
       <div className={`notice ${activeTabStatus.canInsert ? 'notice-success' : 'notice-warning'}`}>
         <div className="notice-title">当前页面：{activeTabStatus.tabTitle}</div>
         <div>{activeTabStatus.reason}</div>
@@ -131,7 +143,7 @@ export default function SnippetTab({ activeTabStatus }: SnippetTabProps) {
         </div>
       )}
 
-      <div className="snippet-meta">
+      <div className="snippet-meta snippet-meta-block">
         <span>内置 {builtinCount} 条</span>
         <span>自定义 {customCount} 条</span>
       </div>
@@ -147,11 +159,14 @@ export default function SnippetTab({ activeTabStatus }: SnippetTabProps) {
       {filtered.length === 0 ? (
         <div className="empty-state">未找到匹配的代码片段</div>
       ) : (
-        filtered.map((cat) => (
+        filtered.map((cat, index) => (
           <div key={cat.category}>
             <div className="category-title">
-              <span>{cat.icon}</span>
-              <span>{cat.category}</span>
+              <div className="category-badge">{String(index + 1).padStart(2, '0')}</div>
+              <div className="category-copy">
+                <span>{cat.category}</span>
+                <span className="category-count">{cat.items.length} 项</span>
+              </div>
             </div>
             {cat.items.map((item) => (
               <div

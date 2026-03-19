@@ -15,6 +15,7 @@ import {
   writeCustomSnippets,
   writeFabEnabled,
 } from '@/lib/storage';
+import UiIcon from './UiIcon';
 
 const TemplateEditorModal = lazy(() => import('./TemplateEditorModal'));
 
@@ -148,25 +149,64 @@ export default function SettingsTab() {
 
   return (
     <div>
+      <div className="panel-hero">
+        <div className="panel-hero-icon">
+          <UiIcon name="settings" size={18} />
+        </div>
+        <div className="panel-hero-copy">
+          <div className="panel-hero-title">偏好与模板管理</div>
+          <div className="panel-hero-subtitle">维护悬浮球、快捷键提示，以及自定义模板的导入、下载与编辑。</div>
+        </div>
+        <div className="panel-hero-metric">v{packageInfo.version}</div>
+      </div>
+
       <div className="settings-section">
-        <div className="settings-title">悬浮球</div>
-        <div className="settings-row">
-          <span className="settings-label">启用页面悬浮球</span>
-          <label className="settings-toggle">
-            <input
-              type="checkbox"
-              checked={fabEnabled}
-              onChange={handleFabToggle}
-            />
-            <span className="settings-toggle-text">
-              {fabEnabled ? '已开启' : '已关闭'}
+        <div className="settings-title-row">
+          <span className="settings-title-icon"><UiIcon name="switch" size={14} /></span>
+          <div>
+            <div className="settings-title">悬浮球</div>
+            <div className="settings-title-subtitle">控制页面侧快捷入口是否展示</div>
+          </div>
+        </div>
+
+        <div className="settings-card settings-stack">
+          <div className="settings-chip-row">
+            <span className={`stat-chip ${fabEnabled ? 'stat-chip-success' : 'stat-chip-muted'}`}>
+              {fabEnabled ? '悬浮球已开启' : '悬浮球已关闭'}
             </span>
-          </label>
+          </div>
+
+          <div className="settings-tip">
+            页面右下角会显示固定入口，用于快速打开 side panel。关闭后当前页面会立即隐藏该入口。
+          </div>
+
+          <div className="settings-row settings-row-card">
+            <div>
+              <div className="settings-label">启用页面悬浮球</div>
+              <div className="settings-row-subtitle">建议在常用设计器页面保持开启</div>
+            </div>
+            <label className="settings-toggle settings-toggle-pill">
+              <input
+                type="checkbox"
+                checked={fabEnabled}
+                onChange={handleFabToggle}
+              />
+              <span className="settings-toggle-text">
+                {fabEnabled ? '已开启' : '已关闭'}
+              </span>
+            </label>
+          </div>
         </div>
       </div>
 
       <div className="settings-section">
-        <div className="settings-title">快捷键设置</div>
+        <div className="settings-title-row">
+          <span className="settings-title-icon"><UiIcon name="keyboard" size={14} /></span>
+          <div>
+            <div className="settings-title">快捷键设置</div>
+            <div className="settings-title-subtitle">当前为页面内生效的通用能力</div>
+          </div>
+        </div>
         <div className="settings-tip">请注意：目前为页面内生效的通用功能快捷键。</div>
         <div className="settings-card">
           <div className="settings-card-caption">常用功能快捷键</div>
@@ -177,7 +217,7 @@ export default function SettingsTab() {
                 <div className="shortcut-value">
                   <kbd className="shortcut-kbd">{key}</kbd>
                   <span className="shortcut-help" title="页面编辑器内触发">
-                    ?
+                    <UiIcon name="info" size={12} />
                   </span>
                 </div>
               </div>
@@ -187,7 +227,13 @@ export default function SettingsTab() {
       </div>
 
       <div className="settings-section">
-        <div className="settings-title">模板管理</div>
+        <div className="settings-title-row">
+          <span className="settings-title-icon"><UiIcon name="template" size={14} /></span>
+          <div>
+            <div className="settings-title">模板管理</div>
+            <div className="settings-title-subtitle">统一维护内置与自定义模板的交付方式</div>
+          </div>
+        </div>
 
         <div className="settings-card settings-stack">
           <div className="template-stats">
@@ -238,18 +284,6 @@ export default function SettingsTab() {
               {templateStatus.text}
             </div>
           )}
-        </div>
-      </div>
-
-      <div className="settings-section">
-        <div className="settings-title">关于</div>
-        <div className="settings-row">
-          <span className="settings-label">版本</span>
-          <span className="settings-secondary">{packageInfo.version}</span>
-        </div>
-        <div className="settings-row">
-          <span className="settings-label">项目</span>
-          <span className="settings-secondary">eplat-devtools</span>
         </div>
       </div>
 
