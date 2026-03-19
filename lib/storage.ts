@@ -1,6 +1,10 @@
 // chrome.storage 封装
 
 import { STORAGE_KEYS } from './constants';
+import {
+  parseSnippetCategories,
+  type SnippetCategory,
+} from './snippet-engine';
 
 /** 读取缩放级别 */
 export async function readZoom(): Promise<number> {
@@ -82,4 +86,23 @@ export async function appendClipboard(
 /** 清空剪贴板 */
 export async function clearClipboard(): Promise<void> {
   await chrome.storage.local.set({ [STORAGE_KEYS.clipboard]: [] });
+}
+
+/** 读取自定义代码片段 */
+export async function readCustomSnippets(): Promise<SnippetCategory[]> {
+  try {
+    const data = await chrome.storage.local.get([STORAGE_KEYS.customSnippets]);
+    const raw = data[STORAGE_KEYS.customSnippets];
+    if (raw == null) return [];
+    return parseSnippetCategories(raw);
+  } catch {
+    return [];
+  }
+}
+
+/** 保存自定义代码片段 */
+export async function writeCustomSnippets(
+  categories: SnippetCategory[],
+): Promise<void> {
+  await chrome.storage.local.set({ [STORAGE_KEYS.customSnippets]: categories });
 }

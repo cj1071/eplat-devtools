@@ -26,6 +26,10 @@ export interface OpenSidepanelMessage {
   type: typeof MSG.openSidepanel;
 }
 
+export interface PingEditorMessage {
+  type: typeof MSG.pingEditor;
+}
+
 export interface ClipboardUpdateMessage {
   type: typeof MSG.clipboardUpdate;
   payload: {
@@ -39,6 +43,7 @@ export type ExtensionMessage =
   | OpenFindMessage
   | CopyUrlMessage
   | OpenSidepanelMessage
+  | PingEditorMessage
   | ClipboardUpdateMessage;
 
 // ===== 辅助函数 =====

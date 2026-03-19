@@ -17,6 +17,7 @@
   --text-secondary: #909399;
   --text-white: #303133; /* 用来兼容之前直接用 --text-white 的地方 */
   --success: #67c23a;
+  --warning: #e6a23c;
   --radius: 2px;
 }
 
@@ -179,6 +180,13 @@ body {
   color: var(--accent);
 }
 
+.btn:disabled {
+  cursor: not-allowed;
+  color: #a8abb2;
+  border-color: #e4e7ed;
+  background: #f5f7fa;
+}
+
 .btn-primary {
   background: var(--accent);
   border-color: var(--accent);
@@ -187,6 +195,12 @@ body {
 
 .btn-primary:hover {
   background: var(--accent-hover);
+}
+
+.btn-primary:disabled {
+  background: #d9ecff;
+  border-color: #d9ecff;
+  color: #8cbce8;
 }
 
 /* ===== 代码预览 ===== */
@@ -269,6 +283,138 @@ body {
   font-size: 13px;
 }
 
+.settings-secondary {
+  color: var(--text-secondary);
+}
+
+.settings-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.settings-toggle-text {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.settings-tip {
+  padding: 8px 0 8px 12px;
+  margin-bottom: 16px;
+  border-left: 3px solid #e4e7ed;
+  font-size: 13px;
+  color: #606266;
+  line-height: 1.5;
+}
+
+.settings-card {
+  border: 1px solid #ebeef5;
+  border-radius: 4px;
+  padding: 16px;
+  background: #fafafa;
+}
+
+.settings-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settings-card-caption {
+  font-size: 12px;
+  color: #909399;
+  margin-bottom: 16px;
+}
+
+.shortcut-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.shortcut-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px dashed #ebeef5;
+}
+
+.shortcut-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.shortcut-value {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.shortcut-kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  min-width: 60px;
+  padding: 0 10px;
+  background: #e9ecef;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #495057;
+}
+
+.shortcut-help {
+  color: #c0c4cc;
+  font-size: 12px;
+  cursor: help;
+}
+
+.template-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.template-stats,
+.snippet-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.stat-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #ecf5ff;
+  color: #409eff;
+  font-size: 12px;
+}
+
+.template-help {
+  padding: 12px;
+  border: 1px solid #ebeef5;
+  border-radius: 4px;
+  background: #ffffff;
+}
+
+.template-help-title,
+.notice-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.template-help-line {
+  font-size: 12px;
+  color: #606266;
+  line-height: 1.6;
+}
+
 /* ===== 空状态 ===== */
 .empty-state {
   text-align: center;
@@ -302,4 +448,88 @@ body {
   background: #fef0f0;
   border: 1px solid #fde2e2;
   color: #f56c6c;
+}
+
+.notice-warning {
+  background: #fdf6ec;
+  border: 1px solid #faecd8;
+  color: var(--warning);
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  padding: 12px;
+  background: rgba(17, 24, 39, 0.24);
+}
+
+.modal-shell {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 720px);
+  height: min(100%, 760px);
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
+}
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.modal-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.modal-subtitle {
+  margin-top: 4px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.json-editor {
+  flex: 1;
+  width: 100%;
+  min-height: 320px;
+  padding: 12px;
+  border: 1px solid var(--border-card);
+  border-radius: 4px;
+  background: #f8fafc;
+  color: #1f2937;
+  font: 12px/1.6 'SF Mono', 'Fira Code', monospace;
+  resize: none;
+  outline: none;
+}
+
+.json-editor:focus {
+  border-color: var(--accent);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

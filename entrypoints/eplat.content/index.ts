@@ -81,6 +81,9 @@ export default defineContentScript({
     // 接收来自 background 的消息
     chrome.runtime.onMessage.addListener(
       (message: ExtensionMessage, _sender, sendResponse) => {
+        if (message.type === MSG.pingEditor) {
+          sendResponse({ ok: true });
+        }
         if (message.type === MSG.insertSnippet) {
           // 通知 bridge 插入代码
           window.dispatchEvent(

@@ -1,0 +1,15 @@
+[
+  {
+    "category": "自定义模板示例",
+    "icon": "🛠",
+    "items": [
+      {
+        "id": "custom-template-example",
+        "name": "自定义模板示例",
+        "description": "可在设置页 JSON 编辑器中修改后保存。",
+        "tags": ["example", "custom"],
+        "template": "function ${函数名}() {\n  console.log('${说明}');\n}"
+      }
+    ]
+  }
+]

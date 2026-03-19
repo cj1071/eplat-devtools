@@ -67,6 +67,7 @@ export const MSG = {
   openFind: 'OPEN_FIND',
   copyUrl: 'COPY_URL',
   openSidepanel: 'OPEN_SIDEPANEL',
+  pingEditor: 'PING_EDITOR',
   // content → sidepanel
   clipboardUpdate: 'CLIPBOARD_UPDATE',
 } as const;

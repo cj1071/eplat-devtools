@@ -1,0 +1,28 @@
+[
+  {
+    "category": "组件渲染",
+    "icon": "🧩",
+    "items": [
+      {
+        "id": "custom-element-render-when-defined",
+        "name": "customElements.whenDefined()",
+        "description": "等待自定义元素注册完成后再执行组件初始化逻辑，适合异步加载组件场景。",
+        "tags": ["customElements", "render", "web-component", "component"],
+        "template": "customElements.whenDefined('${组件名}').then(() => {\n  // TODO: 组件就绪后的处理逻辑\n});"
+      }
+    ]
+  },
+  {
+    "category": "页面生命周期",
+    "icon": "⚡",
+    "items": [
+      {
+        "id": "window-dv-ready",
+        "name": "window.addEventListener('dv:ready', ...)",
+        "description": "在页面顶层监听 dv:ready，确保 dvLoader 资源全部就绪后再执行查询或初始化逻辑。",
+        "tags": ["dv:ready", "dvLoader", "dvUtils", "init"],
+        "template": "window.addEventListener('dv:ready', function() {\n  // TODO: 资源就绪后的初始化逻辑\n});"
+      }
+    ]
+  }
+]

@@ -1,77 +1,92 @@
-import { useState } from 'react';
-import { sendToBackground } from '@/lib/messaging';
-import { MSG } from '@/lib/constants';
+import { useEffect, useState } from 'react';
+import { MSG, STORAGE_KEYS } from '@/lib/constants';
+import type { ActiveTabStatus } from '@/lib/editor-status';
 import type { SnippetCategory, SnippetItem } from '@/lib/snippet-engine';
-import { searchSnippets, getSnippetCode } from '@/lib/snippet-engine';
+import {
+  countSnippetItems,
+  getSnippetCode,
+  searchSnippets,
+} from '@/lib/snippet-engine';
+import { sendToBackground } from '@/lib/messaging';
+import { BUILTIN_SNIPPETS } from '@/lib/snippet-data';
+import { readCustomSnippets } from '@/lib/storage';
 
-// 内置示例数据（后续从 snippets/*.json 加载）
-const BUILTIN_SNIPPETS: SnippetCategory[] = [
-  {
-    category: '弹窗函数',
-    icon: '💬',
-    items: [
-      {
-        id: 'geDialog-open',
-        name: 'geDialog.open()',
-        description: '打开平台弹窗组件',
-        tags: ['dialog', 'ui'],
-        template: `geDialog.open({
-  title: "\${标题}",
-  width: "\${宽度}",
-  url: "\${URL}",
-  buttons: [
-    { text: '确定', handler: function() { /* TODO */ } },
-    { text: '取消', handler: function() { geDialog.close(); } }
-  ]
-});`,
-      },
-      {
-        id: 'geDialog-close',
-        name: 'geDialog.close()',
-        description: '关闭当前弹窗',
-        tags: ['dialog', 'ui'],
-        template: 'geDialog.close();',
-      },
-    ],
-  },
-  {
-    category: '表单校验',
-    icon: '✅',
-    items: [
-      {
-        id: 'validateField',
-        name: 'validateField()',
-        description: '校验单个字段',
-        tags: ['form', 'validation'],
-        template: `validateField("\${字段名}", "\${校验规则}");`,
-      },
-      {
-        id: 'getFormData',
-        name: 'getFormData()',
-        description: '获取表单数据',
-        tags: ['form', 'data'],
-        template: `var formData = getFormData("\${表单ID}");`,
-      },
-    ],
-  },
-];
+interface SnippetTabProps {
+  activeTabStatus: ActiveTabStatus;
+}
 
-export default function SnippetTab() {
+function findItemById(
+  categories: SnippetCategory[],
+  itemId: string,
+): SnippetItem | null {
+  for (const category of categories) {
+    const item = category.items.find((entry) => entry.id === itemId);
+    if (item) return item;
+  }
+
+  return null;
+}
+
+export default function SnippetTab({ activeTabStatus }: SnippetTabProps) {
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState<SnippetItem | null>(null);
+  const [customSnippets, setCustomSnippets] = useState<SnippetCategory[]>([]);
   const [status, setStatus] = useState<{
     tone: 'success' | 'error';
     text: string;
   } | null>(null);
 
-  const filtered = searchSnippets(BUILTIN_SNIPPETS, query);
+  const allSnippets = [...BUILTIN_SNIPPETS, ...customSnippets];
+  const filtered = searchSnippets(allSnippets, query);
+  const builtinCount = countSnippetItems(BUILTIN_SNIPPETS);
+  const customCount = countSnippetItems(customSnippets);
+
+  useEffect(() => {
+    const syncCustomSnippets = async () => {
+      const next = await readCustomSnippets();
+      setCustomSnippets(next);
+      setSelected((current) => {
+        if (!current) return current;
+        return findItemById([...BUILTIN_SNIPPETS, ...next], current.id);
+      });
+    };
+
+    void syncCustomSnippets();
+
+    const listener = (
+      changes: Record<string, chrome.storage.StorageChange>,
+      areaName: string,
+    ) => {
+      if (areaName === 'local' && changes[STORAGE_KEYS.customSnippets]) {
+        void syncCustomSnippets();
+      }
+    };
+
+    chrome.storage.onChanged.addListener(listener);
+    return () => chrome.storage.onChanged.removeListener(listener);
+  }, []);
 
   const handleInsert = async (item: SnippetItem) => {
+    if (!activeTabStatus.canInsert) {
+      setStatus({ tone: 'error', text: activeTabStatus.reason });
+      return;
+    }
+
     const code = getSnippetCode(item);
-    const result = await sendToBackground({
-      type: MSG.insertSnippet,
-      payload: { code },
-    });
+    let result: unknown;
+
+    try {
+      result = await sendToBackground({
+        type: MSG.insertSnippet,
+        payload: { code },
+      });
+    } catch (error) {
+      setStatus({
+        tone: 'error',
+        text: error instanceof Error ? error.message : '插入失败，请稍后重试',
+      });
+      return;
+    }
 
     if (
       result &&
@@ -95,11 +110,21 @@ export default function SnippetTab() {
 
   return (
     <div>
+      <div className={`notice ${activeTabStatus.canInsert ? 'notice-success' : 'notice-warning'}`}>
+        <div className="notice-title">当前页面：{activeTabStatus.tabTitle}</div>
+        <div>{activeTabStatus.reason}</div>
+      </div>
+
       {status && (
         <div className={`notice notice-${status.tone}`}>
           {status.text}
         </div>
       )}
+
+      <div className="snippet-meta">
+        <span>内置 {builtinCount} 条</span>
+        <span>自定义 {customCount} 条</span>
+      </div>
 
       <input
         className="search-bar"
@@ -130,6 +155,8 @@ export default function SnippetTab() {
                 </div>
                 <button
                   className="btn btn-primary"
+                  disabled={!activeTabStatus.canInsert}
+                  title={activeTabStatus.canInsert ? '插入到当前编辑器' : activeTabStatus.reason}
                   onClick={(e) => {
                     e.stopPropagation();
                     void handleInsert(item);
