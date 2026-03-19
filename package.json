@@ -2,7 +2,7 @@
   "name": "eplat-devtools",
   "description": "eplat 平台脚本编辑器增强工具",
   "private": true,
-  "version": "0.0.1-test.3",
+  "version": "0.0.1-test.4",
   "packageManager": "pnpm@10.27.0",
   "type": "module",
   "scripts": {
